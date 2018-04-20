@@ -21,6 +21,7 @@
 
 package edu.wright.cs.raiderplanner.controller;
 
+import edu.wright.cs.raiderplanner.model.Account;
 import edu.wright.cs.raiderplanner.model.Activity;
 import edu.wright.cs.raiderplanner.model.Assignment;
 import edu.wright.cs.raiderplanner.model.Coursework;
@@ -34,6 +35,7 @@ import edu.wright.cs.raiderplanner.model.Module;
 import edu.wright.cs.raiderplanner.model.Notification;
 import edu.wright.cs.raiderplanner.model.QuantityType;
 import edu.wright.cs.raiderplanner.model.Requirement;
+import edu.wright.cs.raiderplanner.model.Settings;
 import edu.wright.cs.raiderplanner.model.StudyProfile;
 import edu.wright.cs.raiderplanner.model.Task;
 import edu.wright.cs.raiderplanner.model.TimetableEvent;
@@ -70,6 +72,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
@@ -105,6 +108,7 @@ import javafx.util.Duration;
 import jfxtras.scene.control.agenda.Agenda;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -112,6 +116,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -150,7 +155,7 @@ public class MenuController implements Initializable {
 	private DropShadow moduleHoverShadow = new DropShadow(screenAverage * 0.02, 0, 0, Color.BLACK);
 	private InnerShadow modulePressedShadow = new InnerShadow(screenAverage * 0.017, 0, 0,
 			Color.BLACK);
-
+	private Stage stage = null;
 	// Labels:
 	private Label welcome;
 	@FXML
@@ -163,6 +168,10 @@ public class MenuController implements Initializable {
 	private Button showNotification;
 	@FXML
 	private Button showDash;
+	@FXML
+	private Button newProfile;
+	@FXML
+	private Button openProfile;
 	@FXML
 	private Button addActivity;
 	@FXML
@@ -192,8 +201,10 @@ public class MenuController implements Initializable {
 	@FXML
 	private HBox exportCalBox;
 
+	@FXML
+	private ToolBar toolBar;
+
 	// chat variables
-	private static final BorderPane mainPane = new BorderPane();
 	private static final BorderPane mainPane = new BorderPane();
 	private final GridPane firstPane = new GridPane();
 	private TextField tfName = new TextField("");
@@ -204,13 +215,11 @@ public class MenuController implements Initializable {
 	private boolean calendarOpen = false; // Used to monitor status of calendar (open or closed)
 	private boolean chatConnection = true;
 	private Alert chatConnectionStatus = new Alert(AlertType.ERROR);
-	private boolean calendarOpen = false; // Used to monitor status of calendar (open or closed)
-	private boolean chatConnection = true;
-	private Alert chatConnectionStatus = new Alert(AlertType.ERROR);
-
 	private String userName;
 	private String hostName;
 	private int portNumber = 1111;
+
+	Settings settings = new Settings();
 
 	/**
 	 * Sets this.current to equal passed variable and calls this.main().
@@ -218,6 +227,7 @@ public class MenuController implements Initializable {
 	public void main(Window wind) {
 		this.current = wind;
 		this.main();
+		this.applyTheme();
 	}
 
 	/**
@@ -280,6 +290,53 @@ public class MenuController implements Initializable {
 		}
 		// Based on user choice of menu option "Export Calendar" button is shown/hidden
 		exportCalBox.setVisible(calendarOpen);
+	}
+
+	/**
+	 * Apply the users theme to the fxml.
+	 */
+	public void applyTheme() {
+		// Reload settings to make sure saved values are used
+		settings.loadSettings();
+		// Make sure that a hex value representing a color exists
+		if (settings.isColorHex(settings.getToolBarColor())) {
+			this.toolBar.setStyle(""
+					+ "-fx-background-color: #" + settings.getToolBarColor());
+		}
+		if (settings.isColorHex(settings.getToolBarTextColor())) {
+			this.title.setStyle(""
+					+ "-fx-font-family: Ariel"
+					+ "; -fx-text-fill: #" + settings.getToolBarTextColor()
+					+ "; -fx-font-size: 2.5em;");
+		}
+		if (settings.isColorHex(settings.getToolBarIconColor())) {
+			this.openMenu.setStyle(""
+					+ "-fx-background-image: "
+					+ "url('/edu/wright/cs/raiderplanner/content/menu.png');"
+					+ "; -fx-background-color: transparent"
+					+ "; -fx-cursor: hand"
+					+ "; -fx-effect: innershadow(gaussian , "
+					+ "#" + settings.getToolBarIconColor() + ", 8, 1, 1, 1);");
+			this.showNotification.setStyle(""
+					+ "; -fx-background-color: transparent"
+					+ "; -fx-cursor: hand"
+					+ "; -fx-effect: innershadow(gaussian , "
+					+ "#" + settings.getToolBarIconColor() + ", 8, 1, 1, 1);");
+			this.calendar.setStyle(""
+					+ "-fx-background-image: "
+					+ "url('/edu/wright/cs/raiderplanner/content/calendar.png');"
+					+ "; -fx-background-color: transparent"
+					+ "; -fx-cursor: hand"
+					+ "; -fx-effect: innershadow(gaussian , "
+					+ "#" + settings.getToolBarIconColor() + ", 8, 1, 1, 1);");
+			this.addActivity.setStyle(""
+					+ "-fx-background-image: "
+					+ "url('/edu/wright/cs/raiderplanner/content/addactivity_small.png');"
+					+ "; -fx-background-color: transparent"
+					+ "; -fx-cursor: hand"
+					+ "; -fx-effect: innershadow(gaussian , "
+					+ "#" + settings.getToolBarIconColor() + ", 8, 1, 1, 1);");
+		}
 	}
 
 	/**
@@ -432,6 +489,82 @@ public class MenuController implements Initializable {
 		moduleBox.setFitToWidth(true);
 		GridPane.setColumnSpan(moduleBox, GridPane.REMAINING);
 		this.mainContent.addRow(2, moduleBox);
+	}
+
+	/**
+	 * Handles when the user selects the new profile button on the main screen.
+	 */
+	public void createNewProfile() {
+		MainController.save();
+		File plannerFile = null;
+		try {
+			Account newAccount = MainController.ui.createAccount();
+			StudyPlannerController study = new StudyPlannerController(newAccount);
+			// Welcome notification:
+			Notification not = new Notification("Welcome!", new GregorianCalendar(),
+					"Thank you for using RaiderPlanner!");
+			study.getPlanner().addNotification(not);
+			MainController.setSpc(study);
+			plannerFile = MainController.ui.savePlannerFileDialog();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (plannerFile != null) {
+			if (plannerFile.getParentFile().exists()) {
+				if (plannerFile.getParentFile().canRead()) {
+					if (plannerFile.getParentFile().canWrite()) {
+						MainController.setPlannerFile(plannerFile);
+						MainController.save();
+					} else {
+						UiManager.reportError("Directory can not be written to.");
+					}
+				} else {
+					UiManager.reportError("Directory cannot be read from.");
+				}
+
+			} else {
+				UiManager.reportError("Directory does not exist.");
+			}
+		}
+		MainController.loadFile(plannerFile);
+		try {
+			MainController.ui.reloadMainMenu();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Handles when the user selects the open profile button on the main screen.
+	 */
+	public void openProfile() {
+		MainController.save();
+		File plannerFile = MainController.ui.loadPlannerFileDialog();
+		MainController.setPlannerFile(plannerFile);
+		if (plannerFile != null) {
+			if (plannerFile.exists()) {
+				if (plannerFile.canRead()) {
+					if (plannerFile.canWrite()) {
+						MainController.setPlannerFile(plannerFile);
+					} else {
+						UiManager.reportError("Cannot write to file.");
+					}
+				} else {
+					UiManager.reportError("Cannot read file.");
+				}
+
+			} else {
+				UiManager.reportError("File does not exist.");
+			}
+		}
+		MainController.loadFile(plannerFile);
+		try {
+			MainController.ui.reloadMainMenu();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -977,19 +1110,20 @@ public class MenuController implements Initializable {
 	/**
 	 * This will take in the action of when the submit button is pressed. The submit button is for
 	 * the chat window where the user inputs his or her information. If the user does not enter a
-	 * username then one will be appointed for them. Then at the very end the chat window will be
-	 * loaded.
+	 * username/hostname, an error will pop up notifying them to enter those values. Then at the
+	 * very end the chat window will be loaded.
 	 */
 	public void submitButtonAction() {
 		submitButton.setOnAction((ActionEvent exception1) -> {
 			if (chatConnection) {
-				if (tfName.getText().equals("")) {
-					tfName.setText("User" + Math.random());
-				} else {
+				if ((tfName.getText() != null && !(tfName.getText().equals("")))
+					&& (tfHost.getText() != null && !(tfHost.getText().equals("")))) {
 					userName = tfName.getText();
+					hostName = tfHost.getText();
+					loadChatWindow();
+				} else {
+					UiManager.displayError("Username and host are required.");
 				}
-				hostName = tfHost.getText();
-				loadChatWindow();
 			} else {
 				chatConnectionStatus.setContentText("Chat" + " connection unsuccessful.");
 				chatConnectionStatus.showAndWait();
@@ -1246,7 +1380,8 @@ public class MenuController implements Initializable {
 
 		Button delete = new Button("Remove");
 		delete.setDisable(true);
-		Button addNew = new Button("Add a new task");
+		Button addNew = null;
+		addNew = new Button("Add a new task");
 		// Bind properties on buttons:
 		delete.disableProperty().bind(new BooleanBinding() {
 			{
@@ -1439,9 +1574,26 @@ public class MenuController implements Initializable {
 			}
 		});
 
-		// text:
-		this.welcome = new Label(
-				"Welcome back, " + MainController.getSpc().getPlanner().getUserName() + "!");
+		/*
+		 * Welcome text. Displays the appropriate welcoming message depending on if the user
+		 * is new or a returning user. Also takes into account if the user entered their
+		 * name or not during account creation.
+		 */
+		if (MainController.getSpc().getPlanner().getCurrentStudyProfile() != null) {
+			if ((MainController.getSpc().getPlanner().getUserName()).isEmpty()) {
+				this.welcome = new Label("Welcome back!");
+			} else {
+				this.welcome = new Label("Welcome back, "
+						+ MainController.getSpc().getPlanner().getUserName() + "!");
+			}
+		} else {
+			if ((MainController.getSpc().getPlanner().getUserName()).isEmpty()) {
+				this.welcome = new Label("Welcome!");
+			} else {
+				this.welcome = new Label(
+						"Welcome " + MainController.getSpc().getPlanner().getUserName() + "!");
+			}
+		}
 		this.welcome.setPadding(new Insets(10, 15, 10, 15));
 		this.topBox.getChildren().add(this.welcome);
 
@@ -1741,7 +1893,7 @@ public class MenuController implements Initializable {
 			this.loadAssignment(assignment, previousWindow, previous);
 		});
 		Button save = new Button("Save");
-		Stage stage = new Stage();
+		stage = new Stage();
 		save.setOnAction(e -> {
 			String path = MainController.ui.saveFileDialog(stage);
 			GanttishDiagram.createGanttishDiagram(MainController.getSpc().getPlanner(), assignment,

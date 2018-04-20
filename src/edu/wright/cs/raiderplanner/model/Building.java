@@ -57,25 +57,25 @@ public class Building extends VersionControlEntity {
 	}
 
 	/**
-     * Returns the code of the building as a String.
-     * @return the code of the building
-     */
+	 * Returns the code of the building as a String.
+	 * @return the code of the building
+	 */
 	public String getCode() {
 		return code;
 	}
 
 	/**
-     * Returns the latitude of the building as a double.
-     * @return the latitude of the building
-     */
+	 * Returns the latitude of the building as a double.
+	 * @return the latitude of the building
+	 */
 	public double getLatitude() {
 		return latitude;
 	}
 
 	/**
-     * Returns the longitude of the building as a double.
-     * @return the longitude of the building
-     */
+	 * Returns the longitude of the building as a double.
+	 * @return the longitude of the building
+	 */
 	public double getLongitude() {
 		return longitude;
 	}
@@ -90,35 +90,35 @@ public class Building extends VersionControlEntity {
 	}
 
 	/**
-     * Sets the code of the building.
-     * @param newCode the new code of the building
-     */
+	 * Sets the code of the building.
+	 * @param newCode the new code of the building
+	 */
 	public void setCode(String newCode) {
 		code = newCode;
 	}
 
 	/**
-     * Sets the latitude of the building.
-     * @param newLatitude the new latitude of the building
-     */
+	 * Sets the latitude of the building.
+	 * @param newLatitude the new latitude of the building
+	 */
 	public void setLatitude(double newLatitude) {
 		latitude = newLatitude;
 	}
 
 	/**
-     * Sets the longitude of the building.
-     * @param newLongitude the new longitude of the building
-     */
+	 * Sets the longitude of the building.
+	 * @param newLongitude the new longitude of the building
+	 */
 	public void setLongitude(double newLongitude) {
 		longitude = newLongitude;
 	}
 
 	// constructor
 	/**
-	 * Constructor for a building with a code, latitude, and longitude.
-	 * @param ccode the code of the building
-	 * @param clatitude the latitude of the building
-	 * @param clongitude the longitude of the building
+	 * Class Constructor for a building with a code, latitude, and longitude.
+	 * @param ccode the code of the building of type String
+	 * @param clatitude the latitude of the building of type double
+	 * @param clongitude the longitude of the building of type double
 	 */
 	public Building(String ccode, double clatitude, double clongitude) {
 		code = ccode;

@@ -47,7 +47,9 @@ public class StudyPlanner implements Serializable {
 	private HashMap<ModelEntity, boolean[]> deadlineNotifications = new HashMap<>();
 	private ArrayList<VersionControlEntity> versionControlLibrary = new ArrayList<>();
 
-	private StudyProfile currentStudyProfile;
+	private StudyProfile currentStudyProfile = new StudyProfile(new HubFile(0,
+		0,0,new ArrayList<Module>(),new ArrayList<VersionControlEntity>(),
+		new ArrayList<Event>(),"No semester",new MultilineString("No details"),"No UId"));
 
 	// public methods
 
@@ -88,7 +90,7 @@ public class StudyPlanner implements Serializable {
 	 * Java Serialization issues would not
 	 * occur for the end user.
 	 *
-	 * @param module.
+	 * @param module : given value is a Module type
 	 * @return.
 	 */
 	public int getTimeSpent(Module module) {
@@ -185,8 +187,7 @@ public class StudyPlanner implements Serializable {
 
 	/**
 	 * Returns an ArrayList of QuantityTypes.
-	 *
-	 * @return ArrayList<QuantityType>
+	 * @return : returns a list of QuantityType
 	 */
 	public ArrayList<QuantityType> getQuantityTypes() {
 		return this.quantityTypes;
@@ -195,7 +196,7 @@ public class StudyPlanner implements Serializable {
 	/**
 	 * Returns an ArrayList of TaskTypes.
 	 *
-	 * @return ArrayList<QuantityType>
+	 * @return returns a list of TaskType
 	 */
 	public ArrayList<TaskType> getTaskTypes() {
 		return this.taskTypes;
@@ -223,8 +224,7 @@ public class StudyPlanner implements Serializable {
 
 	/**
 	 * Change the current Study Profile to a Study Profile with the given ID.
-	 *
-	 * @param profileID ID of a Study Profile
+	 * @param profileId : ID of a Study Profile.
 	 * @return whether changed successfully.
 	 */
 	public boolean setCurrentStudyProfile(String profileId) {
@@ -238,7 +238,7 @@ public class StudyPlanner implements Serializable {
 	}
 
 	/**
-	 * Adds a new StudyProfile to the StudyPlanner
+	 * Adds a new StudyProfile to the StudyPlanner.
 	 *
 	 * @param profile StudyProfile to be added.
 	 */
